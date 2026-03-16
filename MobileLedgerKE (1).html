@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MobileLedgerKE — Smart Finance for Kenya's SMEs</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root{
+  --brown-50:#fdf8f3;
+  --brown-100:#f5ebe0;
+  --brown-200:#e8d5c0;
+  --brown-300:#d4b896;
+  --brown-400:#b8926a;
+  --brown-500:#9a6e47;
+  --brown-600:#7d5432;
+  --brown-700:#5e3e22;
+  --brown-800:#3e2a14;
+  --brown-900:#1f1409;
+  --cream:#fefaf5;
+  --gold:#c9a227;
+  --gold-light:#f0d98c;
+  --text-dark:#2d1f0e;
+  --text-mid:#6b4f34;
+  --text-light:#9a7d5a;
+  --border:#e8d5c0;
+  --white:#ffffff;
+  --success:#2d7a4f;
+  --danger:#b83232;
+  --info:#1a5fa8;
+  --ff-head:'Playfair Display',Georgia,serif;
+  --ff-body:'DM Sans','Segoe UI',sans-serif;
+  --radius:12px;
+  --radius-sm:8px;
+  --shadow:0 2px 12px rgba(61,42,20,0.08);
+  --shadow-lg:0 8px 32px rgba(61,42,20,0.13);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--ff-body);background:var(--cream);color:var(--text-dark);font-size:15px;line-height:1.6;min-height:100vh}
+h1,h2,h3,h4{font-family:var(--ff-head);line-height:1.2}
+a{color:var(--brown-600);text-decoration:none}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;padding:0 24px}
+.nav-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;gap:12px;height:62px}
+.logo{font-family:var(--ff-head);font-size:20px;font-weight:700;color:var(--brown-700);display:flex;align-items:center;gap:8px;flex-shrink:0}
+.logo-mark{width:34px;height:34px;background:var(--brown-600);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:16px;font-weight:700}
+.logo span{color:var(--gold)}
+.nav-links{display:flex;gap:4px;margin-left:auto}
+.nav-links a,.nav-links button{font-family:var(--ff-body);font-size:13.5px;color:var(--text-mid);padding:7px 14px;border-radius:7px;background:none;border:none;cursor:pointer;transition:all .18s;white-space:nowrap}
+.nav-links a:hover,.nav-links button:hover{background:var(--brown-50);color:var(--brown-700)}
+.nav-cta{background:var(--brown-600)!important;color:#fff!important;font-weight:500}
+.nav-cta:hover{background:var(--brown-700)!important}
+.nav-mobile-toggle{display:none;background:none;border:none;cursor:pointer;padding:6px;color:var(--text-dark)}
+
+/* PAGE SECTIONS */
+.section{max-width:1100px;margin:0 auto;padding:60px 24px}
+.section-sm{max-width:1100px;margin:0 auto;padding:40px 24px}
+.bg-white{background:var(--white)}
+.bg-cream{background:var(--cream)}
+.bg-brown{background:var(--brown-800)}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--brown-800) 0%,var(--brown-600) 60%,var(--brown-500) 100%);color:#fff;padding:80px 24px 100px;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")}
+.hero-inner{max-width:780px;margin:0 auto;position:relative;z-index:1}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:30px;padding:5px 14px;font-size:12.5px;letter-spacing:.03em;margin-bottom:22px;color:rgba(255,255,255,0.9)}
+.hero h1{font-size:clamp(32px,6vw,58px);font-weight:700;margin-bottom:18px;color:#fff}
+.hero h1 span{color:var(--gold-light)}
+.hero p{font-size:clamp(15px,2vw,18px);color:rgba(255,255,255,0.82);max-width:580px;margin:0 auto 36px;font-weight:300}
+.hero-btns{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:12px 26px;border-radius:9px;font-family:var(--ff-body);font-size:14.5px;font-weight:500;cursor:pointer;border:none;transition:all .2s}
+.btn-primary{background:var(--gold);color:var(--brown-900)}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-1px)}
+.btn-outline{background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.35)}
+.btn-outline:hover{background:rgba(255,255,255,0.18)}
+.btn-brown{background:var(--brown-600);color:#fff}
+.btn-brown:hover{background:var(--brown-700);transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--brown-600);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--brown-50);border-color:var(--brown-300)}
+.hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:52px;padding-top:36px;border-top:1px solid rgba(255,255,255,0.15)}
+.hero-stat{text-align:center}
+.hero-stat .num{font-family:var(--ff-head);font-size:28px;font-weight:700;color:var(--gold-light)}
+.hero-stat .lbl{font-size:12px;color:rgba(255,255,255,0.6);margin-top:2px;letter-spacing:.04em;text-transform:uppercase}
+
+/* TRUST BAR */
+.trust-bar{background:var(--brown-50);border-bottom:1px solid var(--border);padding:14px 24px;text-align:center}
+.trust-bar-inner{max-width:900px;margin:0 auto;display:flex;align-items:center;justify-content:center;gap:28px;flex-wrap:wrap;font-size:13px;color:var(--text-mid)}
+.trust-item{display:flex;align-items:center;gap:6px}
+.trust-dot{width:6px;height:6px;border-radius:50%;background:var(--success)}
+
+/* HOW IT WORKS */
+.steps{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:0;counter-reset:steps;position:relative}
+.steps::before{content:'';position:absolute;top:38px;left:12%;right:12%;height:1px;background:var(--border);z-index:0}
+.step{text-align:center;padding:24px 16px;position:relative;z-index:1}
+.step-num{width:54px;height:54px;border-radius:50%;background:var(--brown-600);color:#fff;font-family:var(--ff-head);font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;border:4px solid var(--cream)}
+.step h4{font-size:14.5px;font-family:var(--ff-body);font-weight:600;color:var(--text-dark);margin-bottom:6px}
+.step p{font-size:13px;color:var(--text-mid)}
+
+/* FEATURES GRID */
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
+.feature-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;transition:box-shadow .2s}
+.feature-card:hover{box-shadow:var(--shadow-lg)}
+.feature-icon{width:44px;height:44px;border-radius:10px;background:var(--brown-100);display:flex;align-items:center;justify-content:center;margin-bottom:14px;font-size:20px}
+.feature-card h3{font-size:16px;font-family:var(--ff-body);font-weight:600;margin-bottom:8px;color:var(--text-dark)}
+.feature-card p{font-size:13.5px;color:var(--text-mid);line-height:1.65}
+
+/* DASHBOARD DEMO */
+.dashboard-demo{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-lg)}
+.dash-topbar{background:var(--brown-800);color:#fff;padding:12px 20px;display:flex;align-items:center;gap:10px;font-size:13px}
+.dash-dots{display:flex;gap:6px}
+.dash-dots span{width:11px;height:11px;border-radius:50%;background:rgba(255,255,255,0.3)}
+.dash-dots span:first-child{background:#ef4444}
+.dash-dots span:nth-child(2){background:#f59e0b}
+.dash-dots span:last-child{background:#22c55e}
+.dash-url{background:rgba(255,255,255,0.1);border-radius:5px;padding:3px 12px;font-size:11.5px;margin:0 auto;color:rgba(255,255,255,0.7)}
+.dash-body{display:grid;grid-template-columns:200px 1fr;min-height:480px}
+.dash-sidebar{background:var(--brown-50);border-right:1px solid var(--border);padding:20px 14px}
+.dash-nav-item{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:7px;font-size:13px;color:var(--text-mid);cursor:pointer;transition:.15s;margin-bottom:3px}
+.dash-nav-item:hover,.dash-nav-item.active{background:var(--brown-100);color:var(--brown-700)}
+.dash-nav-item.active{font-weight:600}
+.dash-nav-icon{width:16px;height:16px;opacity:.7}
+.dash-main{padding:20px;overflow:auto}
+.dash-greeting{margin-bottom:18px}
+.dash-greeting h2{font-size:17px;font-family:var(--ff-body);font-weight:600}
+.dash-greeting p{font-size:12.5px;color:var(--text-mid)}
+.metric-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.metric-card{background:var(--cream);border-radius:9px;padding:12px}
+.metric-card .label{font-size:11px;color:var(--text-light);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.metric-card .value{font-family:var(--ff-head);font-size:20px;font-weight:600;color:var(--text-dark)}
+.metric-card .change{font-size:11px;margin-top:2px}
+.change.up{color:var(--success)}
+.change.down{color:var(--danger)}
+.chart-row{display:grid;grid-template-columns:1.6fr 1fr;gap:14px;margin-bottom:16px}
+.chart-box{background:var(--cream);border-radius:9px;padding:14px}
+.chart-box h4{font-size:12.5px;color:var(--text-mid);margin-bottom:10px;font-family:var(--ff-body);font-weight:500}
+.insight-strip{background:linear-gradient(135deg,var(--brown-700),var(--brown-600));border-radius:9px;padding:12px 16px;color:#fff;display:flex;align-items:flex-start;gap:10px}
+.insight-strip .icon{font-size:18px;flex-shrink:0;margin-top:1px}
+.insight-strip p{font-size:12.5px;line-height:1.5}
+.insight-strip p strong{font-weight:600;display:block;margin-bottom:2px}
+
+/* UPLOAD SECTION */
+.upload-zone{border:2px dashed var(--brown-300);border-radius:var(--radius);padding:48px 24px;text-align:center;background:var(--white);transition:.2s;cursor:pointer;position:relative}
+.upload-zone:hover{border-color:var(--brown-500);background:var(--brown-50)}
+.upload-zone input[type=file]{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+.upload-icon{font-size:40px;margin-bottom:14px}
+.upload-zone h3{font-size:17px;font-family:var(--ff-body);font-weight:600;color:var(--text-dark);margin-bottom:8px}
+.upload-zone p{font-size:13.5px;color:var(--text-mid)}
+.format-pills{display:flex;gap:7px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+.pill{background:var(--brown-100);color:var(--brown-600);border-radius:30px;padding:3px 12px;font-size:12px;font-weight:500}
+
+/* PRICING */
+.pricing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:20px;align-items:start}
+.price-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:24px;position:relative;transition:box-shadow .2s}
+.price-card:hover{box-shadow:var(--shadow-lg)}
+.price-card.featured{border-color:var(--brown-500);border-width:2px}
+.popular-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--brown-600);color:#fff;border-radius:30px;padding:3px 14px;font-size:11px;font-weight:600;white-space:nowrap}
+.price-tier{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);margin-bottom:8px}
+.price-amount{display:flex;align-items:baseline;gap:3px;margin-bottom:4px}
+.price-amount .kes{font-size:13px;font-weight:600;color:var(--text-mid);margin-top:6px}
+.price-amount .num{font-family:var(--ff-head);font-size:36px;font-weight:700;color:var(--text-dark)}
+.price-amount .free{font-family:var(--ff-head);font-size:28px;font-weight:700;color:var(--success)}
+.price-desc{font-size:12.5px;color:var(--text-mid);margin-bottom:18px}
+.price-features{list-style:none;font-size:13px;color:var(--text-mid);display:flex;flex-direction:column;gap:7px;margin-bottom:22px}
+.price-features li{display:flex;align-items:flex-start;gap:7px}
+.price-features li::before{content:'✓';color:var(--success);font-weight:700;flex-shrink:0;margin-top:1px}
+.price-features li.limited::before{content:'○';color:var(--brown-400)}
+.price-note{font-size:11.5px;color:var(--text-light);text-align:center}
+
+/* INSIGHTS */
+.insights-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.insight-card{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px;border-left:4px solid var(--brown-400)}
+.insight-card.warning{border-left-color:var(--gold)}
+.insight-card.good{border-left-color:var(--success)}
+.insight-card.alert{border-left-color:var(--danger)}
+.insight-card h4{font-size:14px;font-family:var(--ff-body);font-weight:600;color:var(--text-dark);margin-bottom:6px}
+.insight-card p{font-size:13px;color:var(--text-mid);margin-bottom:10px}
+.insight-card .rec{background:var(--brown-50);border-radius:6px;padding:9px 12px;font-size:12.5px;color:var(--brown-700);border-left:3px solid var(--brown-300)}
+.insight-card .rec strong{display:block;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--brown-500);margin-bottom:3px}
+
+/* CATEGORIES */
+.cat-list{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat-group h4{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-light);font-weight:600;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.cat-item{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;font-size:13px;color:var(--text-mid);background:var(--cream)}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+
+/* SECTION HEADERS */
+.section-header{text-align:center;margin-bottom:40px}
+.section-header h2{font-size:clamp(24px,4vw,36px);font-weight:700;color:var(--text-dark);margin-bottom:10px}
+.section-header p{font-size:15px;color:var(--text-mid);max-width:560px;margin:0 auto}
+.section-header .overline{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--brown-500);font-weight:600;margin-bottom:8px}
+
+/* FAQ */
+.faq-list{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:2px}
+.faq-item{background:var(--white);border:1px solid var(--border);border-radius:var(--radius-sm);overflow:hidden}
+.faq-q{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;font-weight:500;font-size:14.5px;color:var(--text-dark);transition:.15s}
+.faq-q:hover{background:var(--brown-50)}
+.faq-q .arrow{transition:transform .2s;font-size:18px;color:var(--text-light);flex-shrink:0;margin-left:12px}
+.faq-item.open .faq-q .arrow{transform:rotate(180deg)}
+.faq-a{display:none;padding:0 20px 16px;font-size:13.5px;color:var(--text-mid);line-height:1.7}
+.faq-item.open .faq-a{display:block}
+
+/* DATA PROTECTION */
+.dp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.dp-card{background:var(--cream);border-radius:var(--radius);padding:22px;border:1px solid var(--border)}
+.dp-icon{font-size:28px;margin-bottom:10px}
+.dp-card h4{font-size:14px;font-weight:600;margin-bottom:6px;color:var(--text-dark)}
+.dp-card p{font-size:13px;color:var(--text-mid)}
+
+/* WHATSAPP / CONTACT */
+.contact-bar{background:var(--brown-800);color:#fff;text-align:center;padding:40px 24px}
+.wa-btn{display:inline-flex;align-items:center;gap:10px;background:#25D366;color:#fff;border-radius:10px;padding:14px 28px;font-size:15px;font-weight:600;cursor:pointer;border:none;transition:all .2s;text-decoration:none}
+.wa-btn:hover{background:#1db954;transform:translateY(-2px)}
+.wa-icon{width:22px;height:22px}
+
+/* FOOTER */
+footer{background:var(--brown-900);color:rgba(255,255,255,0.6);padding:48px 24px 24px;font-size:13px}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-grid{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:40px;margin-bottom:40px}
+.footer-brand .logo{color:#fff;font-size:18px;margin-bottom:10px}
+.footer-brand p{font-size:12.5px;line-height:1.7;max-width:220px}
+.footer-col h5{color:#fff;font-size:13px;font-weight:600;margin-bottom:12px;letter-spacing:.03em}
+.footer-col a{display:block;color:rgba(255,255,255,0.55);font-size:12.5px;margin-bottom:7px;transition:.15s}
+.footer-col a:hover{color:#fff}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.1);padding-top:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:gap;gap:8px}
+.footer-bottom p{font-size:12px}
+.compliance-badge{background:rgba(255,255,255,0.08);border-radius:5px;padding:4px 10px;font-size:11px;color:rgba(255,255,255,0.6)}
+
+/* TABS */
+.tabs{display:flex;gap:4px;background:var(--brown-100);border-radius:10px;padding:4px;width:fit-content;margin:0 auto 32px}
+.tab-btn{padding:7px 20px;border-radius:7px;font-size:13.5px;font-family:var(--ff-body);font-weight:500;border:none;cursor:pointer;transition:.18s;background:none;color:var(--text-mid)}
+.tab-btn.active{background:var(--white);color:var(--brown-700);box-shadow:0 1px 4px rgba(0,0,0,0.1)}
+.tab-content{display:none}
+.tab-content.active{display:block}
+
+/* UPLOAD DEMO */
+.upload-demo{background:var(--white);border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}
+.upload-progress{padding:20px;border-top:1px solid var(--border)}
+.progress-file{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--brown-50)}
+.progress-file:last-child{border-bottom:none}
+.file-icon{width:36px;height:36px;border-radius:7px;background:var(--brown-100);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.file-info{flex:1;min-width:0}
+.file-info .name{font-size:13px;font-weight:500;color:var(--text-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-info .meta{font-size:11.5px;color:var(--text-light)}
+.progress-bar{height:3px;background:var(--brown-100);border-radius:2px;overflow:hidden;margin-top:5px}
+.progress-fill{height:100%;border-radius:2px;background:var(--brown-600)}
+.file-status{font-size:11.5px;font-weight:600;flex-shrink:0}
+.status-done{color:var(--success)}
+.status-proc{color:var(--gold)}
+
+/* REPORT TYPES */
+.report-list{display:flex;flex-direction:column;gap:10px;max-width:640px;margin:0 auto}
+.report-item{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:16px 20px;display:flex;align-items:center;gap:14px}
+.report-item-icon{width:42px;height:42px;border-radius:9px;background:var(--brown-100);display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.report-item-info{flex:1}
+.report-item-info h4{font-size:14px;font-weight:600;color:var(--text-dark);margin-bottom:2px;font-family:var(--ff-body)}
+.report-item-info p{font-size:12.5px;color:var(--text-mid)}
+.report-item-btns{display:flex;gap:7px;flex-shrink:0}
+.dl-btn{display:flex;align-items:center;gap:4px;padding:6px 12px;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--border);background:none;color:var(--text-mid);transition:.15s}
+.dl-btn:hover{background:var(--brown-50);border-color:var(--brown-300);color:var(--brown-700)}
+
+/* SAMPLE DATA TABLE */
+.table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:var(--radius)}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead{background:var(--brown-50)}
+th{padding:11px 14px;text-align:left;font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--text-light);font-weight:600;white-space:nowrap;border-bottom:1px solid var(--border)}
+td{padding:10px 14px;border-bottom:1px solid var(--brown-50);color:var(--text-mid)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--brown-50)}
+.badge{display:inline-block;padding:2px 9px;border-radius:30px;font-size:11.5px;font-weight:500}
+.badge-income{background:#e6f5ee;color:#2d7a4f}
+.badge-expense{background:#fceeed;color:#b83232}
+.badge-pending{background:#fef3cd;color:#7a4f00}
+.amount-pos{color:var(--success);font-weight:500}
+.amount-neg{color:var(--danger);font-weight:500}
+
+/* ARCH DIAGRAM */
+.arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;text-align:center}
+.arch-layer{background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:18px}
+.arch-layer h4{font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid var(--border);font-family:var(--ff-body)}
+.arch-tag{display:inline-block;background:var(--brown-100);color:var(--brown-700);border-radius:5px;padding:3px 9px;font-size:11.5px;margin:3px}
+
+/* SCROLL INDICATOR */
+.scroll-cue{display:flex;justify-content:center;padding:16px 0;margin-top:-20px}
+.scroll-arrow{width:30px;height:30px;border:1.5px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--text-light);animation:bounce 2s infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--white);border-radius:var(--radius);max-width:520px;width:100%;padding:32px;position:relative;max-height:90vh;overflow-y:auto}
+.modal h2{font-size:22px;margin-bottom:6px}
+.modal p.sub{font-size:14px;color:var(--text-mid);margin-bottom:24px}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;font-weight:500;color:var(--text-dark);margin-bottom:5px}
+.form-group input,.form-group select{width:100%;padding:10px 14px;border:1px solid var(--border);border-radius:8px;font-family:var(--ff-body);font-size:14px;color:var(--text-dark);background:var(--white);transition:.15s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--brown-400);box-shadow:0 0 0 3px rgba(154,110,71,0.12)}
+.modal-close{position:absolute;top:16px;right:18px;background:none;border:none;font-size:20px;cursor:pointer;color:var(--text-light);line-height:1}
+.modal-close:hover{color:var(--text-dark)}
+
+/* MOBILE */
+@media(max-width:768px){
+  .nav-links{display:none}.nav-mobile-toggle{display:block}
+  .dash-body{grid-template-columns:1fr}.dash-sidebar{display:none}
+  .metric-grid{grid-template-columns:1fr 1fr}
+  .chart-row{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr}
+  .cat-list{grid-template-columns:1fr}
+  .arch-grid{grid-template-columns:1fr}
+  .steps::before{display:none}
+  .hero-stats{gap:18px}
+  .report-item-btns{flex-direction:column}
+  .price-card{margin-bottom:8px}
+}
+@media(max-width:480px){
+  .metric-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="signupModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <h2>Get Started Free</h2>
+    <p class="sub">Create your MobileLedgerKE account. No credit card required.</p>
+    <div class="form-group">
+      <label>Business Name</label>
+      <input type="text" placeholder="e.g. Mama Wanjiku Salon">
+    </div>
+    <div class="form-group">
+      <label>Your Name</label>
+      <input type="text" placeholder="Full name">
+    </div>
+    <div class="form-group">
+      <label>Phone Number</label>
+      <input type="tel" placeholder="07XX XXX XXX">
+    </div>
+    <div class="form-group">
+      <label>Business Type</label>
+      <select>
+        <option value="">Select your business type</option>
+        <option>Retail Shop / Duka</option>
+        <option>Salon / Barber</option>
+        <option>Restaurant / Food Kiosk</option>
+        <option>Cosmetics / Beauty</option>
+        <option>Market Trader</option>
+        <option>Other SME</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Email Address</label>
+      <input type="email" placeholder="you@example.com">
+    </div>
+    <button class="btn btn-brown" style="width:100%;padding:13px;font-size:15px;border-radius:9px" onclick="handleSignup()">Create Free Account</button>
+    <p style="font-size:12px;color:var(--text-light);text-align:center;margin-top:12px">By signing up you agree to our Terms of Service and Privacy Policy</p>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <div class="logo">
+      <div class="logo-mark">ML</div>
+      MobileLedger<span>KE</span>
+    </div>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#how">How It Works</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+      <button class="nav-cta" onclick="openModal()">Get Started Free</button>
+    </div>
+    <button class="nav-mobile-toggle" onclick="toggleMobileMenu()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">🇰🇪 Built for Kenyan SMEs</div>
+    <h1>Smart Finance for<br><span>Your Business</span></h1>
+    <p>Upload your M-Pesa statements, sales records, or Excel files. Get instant insights, professional reports, and AI-powered advice — no accountant needed.</p>
+    <div class="hero-btns">
+      <button class="btn btn-primary" onclick="openModal()">Start Free — Upload Your First File</button>
+      <a href="#demo" class="btn btn-outline">See Demo Dashboard</a>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="num">2,400+</div><div class="lbl">SMEs Served</div></div>
+      <div class="hero-stat"><div class="num">KES 1.2B</div><div class="lbl">Transactions Analyzed</div></div>
+      <div class="hero-stat"><div class="num">99 KES</div><div class="lbl">Per Report</div></div>
+      <div class="hero-stat"><div class="num">5 mins</div><div class="lbl">To Your First Insight</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+  <div class="trust-bar-inner">
+    <div class="trust-item"><span class="trust-dot"></span> Free first upload</div>
+    <div class="trust-item"><span class="trust-dot"></span> M-Pesa statement support</div>
+    <div class="trust-item"><span class="trust-dot"></span> No accounting knowledge needed</div>
+    <div class="trust-item"><span class="trust-dot"></span> GDPR & Data Act compliant</div>
+    <div class="trust-item"><span class="trust-dot"></span> Kenyan business focus</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="bg-white" id="how">
+<div class="section-sm">
+  <div class="section-header">
+    <div class="overline">How It Works</div>
+    <h2>From Upload to Insight in Minutes</h2>
+    <p>Three simple steps and your finances are clear.</p>
+  </div>
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <h4>Upload Your File</h4>
+      <p>Drop in your M-Pesa statement, Excel sheet, CSV, or POS export. We accept any format.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <h4>AI Cleans & Analyzes</h4>
+      <p>Our engine auto-detects columns, fixes messy data, and categorizes every transaction.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <h4>Get Your Dashboard</h4>
+      <p>Instant charts, insights, and a plain-language summary of your business health.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <h4>Download Your Report</h4>
+      <p>PDF or Excel report ready to share with partners, banks, or keep for your records.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- UPLOAD DEMO -->
+<div class="bg-cream" id="upload">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Data Ingestion</div>
+    <h2>Upload Any Financial File</h2>
+    <p>Our smart parser handles messy, real-world business files automatically.</p>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start">
+    <div>
+      <div class="upload-zone" onclick="triggerUpload()">
+        <input type="file" id="fileInput" accept=".csv,.xlsx,.xls,.pdf" onchange="handleFileUpload(this)">
+        <div class="upload-icon">📂</div>
+        <h3>Drag & Drop or Click to Upload</h3>
+        <p>Supports M-Pesa PDF/CSV, Excel workbooks, POS exports, and bank statements</p>
+        <div class="format-pills">
+          <span class="pill">M-Pesa CSV</span>
+          <span class="pill">Excel .xlsx</span>
+          <span class="pill">CSV</span>
+          <span class="pill">Bank PDF</span>
+          <span class="pill">POS Export</span>
+        </div>
+      </div>
+      <div style="margin-top:18px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:16px">
+        <h4 style="font-size:13px;font-weight:600;color:var(--text-dark);margin-bottom:10px">What We Auto-Detect</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+          <div style="font-size:12.5px;color:var(--text-mid);display:flex;align-items:center;gap:6px"><span style="color:var(--success)">✓</span> Transaction dates</div>
+          <div style="font-size:12.5px;color:var(--text-mid);display:flex;align-items:center;gap:6px"><span style="color:var(--success)">✓</span> Amounts & balances</div>
+          <div style="font-size:12.5px;color:var(--text-mid);display:flex;align-items:center;gap:6px"><span style="color:var(--success)">✓</span> M-Pesa references</div>
+          <div style="font-size:12.5px;color:var(--text-mid);display:flex;align-items:center;gap:6px"><span style="color:var(--success)">✓</span> Phone numbers</div>
+          <div style="font-size:12.5px;color:var(--text-mid);display:flex;align-items:center;gap:6px"><span style="color:var(--success)">✓</span> Income vs expense</div>
+          <div style="font-size:12.5px;color:var(--text-mid);display:flex;align-items:center;gap:6px"><span style="color:var(--success)">✓</span> Payment method</div>
+        </div>
+      </div>
+    </div>
+    <div class="upload-demo">
+      <div style="background:var(--brown-700);padding:12px 16px;color:#fff;font-size:13px;display:flex;align-items:center;justify-content:space-between">
+        <span style="font-weight:500">Processing Queue</span>
+        <span style="font-size:11.5px;opacity:.7">3 files</span>
+      </div>
+      <div class="upload-progress">
+        <div class="progress-file">
+          <div class="file-icon">📊</div>
+          <div class="file-info">
+            <div class="name">mpesa_statement_feb2024.csv</div>
+            <div class="meta">847 transactions · 2.3 MB</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div>
+          </div>
+          <div class="file-status status-done">Done ✓</div>
+        </div>
+        <div class="progress-file">
+          <div class="file-icon">📗</div>
+          <div class="file-info">
+            <div class="name">january_sales_ledger.xlsx</div>
+            <div class="meta">312 rows · 156 KB</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:78%"></div></div>
+          </div>
+          <div class="file-status status-proc">78%</div>
+        </div>
+        <div class="progress-file">
+          <div class="file-icon">📄</div>
+          <div class="file-info">
+            <div class="name">pos_export_march.csv</div>
+            <div class="meta">Waiting · 89 KB</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div>
+          </div>
+          <div class="file-status" style="color:var(--text-light)">Queued</div>
+        </div>
+      </div>
+      <div style="border-top:1px solid var(--border);padding:14px 16px;background:var(--brown-50)">
+        <div style="font-size:12.5px;color:var(--text-mid);margin-bottom:8px;font-weight:500">Auto-detected columns from M-Pesa file:</div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <span class="pill">Date</span><span class="pill">Reference</span><span class="pill">Details</span><span class="pill">Paid In</span><span class="pill">Withdrawn</span><span class="pill">Balance</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- SAMPLE DATA TABLE -->
+<div class="bg-white">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Processed Transactions</div>
+    <h2>Clean, Categorized Data</h2>
+    <p>Raw M-Pesa and sales data transformed into structured, analyzable transactions.</p>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Description</th>
+          <th>Reference</th>
+          <th>Amount (KES)</th>
+          <th>Category</th>
+          <th>Type</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>02 Feb 2024</td><td>Customer Payment - Jane Mwangi</td><td>QHR8892K1</td><td class="amount-pos">+4,500.00</td><td>Sales Revenue</td><td><span class="badge badge-income">Income</span></td></tr>
+        <tr><td>02 Feb 2024</td><td>Wholesale Supplier - Eastleigh Beauty</td><td>OGT4421P2</td><td class="amount-neg">-12,000.00</td><td>Inventory Purchase</td><td><span class="badge badge-expense">Expense</span></td></tr>
+        <tr><td>03 Feb 2024</td><td>Till Payment - Walk-in Customer</td><td>POS-00441</td><td class="amount-pos">+2,800.00</td><td>POS Revenue</td><td><span class="badge badge-income">Income</span></td></tr>
+        <tr><td>03 Feb 2024</td><td>Safaricom Airtime Purchase</td><td>ADM9931T0</td><td class="amount-neg">-500.00</td><td>Utilities</td><td><span class="badge badge-expense">Expense</span></td></tr>
+        <tr><td>05 Feb 2024</td><td>MPESA - Rent Payment Landlord</td><td>QMN7712S4</td><td class="amount-neg">-18,000.00</td><td>Rent</td><td><span class="badge badge-expense">Expense</span></td></tr>
+        <tr><td>06 Feb 2024</td><td>Customer Deposit - Wig Order</td><td>RTP5543W9</td><td class="amount-pos">+8,000.00</td><td>Sales Revenue</td><td><span class="badge badge-income">Income</span></td></tr>
+        <tr><td>07 Feb 2024</td><td>Staff Salary - Aisha Hassan</td><td>SAL-0012</td><td class="amount-neg">-15,000.00</td><td>Staff Salaries</td><td><span class="badge badge-expense">Expense</span></td></tr>
+        <tr><td>08 Feb 2024</td><td>Social Media Marketing - Canva</td><td>FBK-9922</td><td class="amount-neg">-1,200.00</td><td>Marketing</td><td><span class="badge badge-expense">Expense</span></td></tr>
+        <tr><td>09 Feb 2024</td><td>Bulk Customer Payment - M-Pesa</td><td>QHK2219L3</td><td class="amount-pos">+6,200.00</td><td>Sales Revenue</td><td><span class="badge badge-income">Income</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- DASHBOARD DEMO -->
+<div class="bg-cream" id="demo">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Dashboard</div>
+    <h2>Your Financial Command Centre</h2>
+    <p>Everything you need to understand your business, at a glance.</p>
+  </div>
+  <div class="dashboard-demo">
+    <div class="dash-topbar">
+      <div class="dash-dots"><span></span><span></span><span></span></div>
+      <div class="dash-url">app.mobileledgerke.co.ke/dashboard</div>
+    </div>
+    <div class="dash-body">
+      <div class="dash-sidebar">
+        <div style="padding:12px 10px 16px;border-bottom:1px solid var(--border);margin-bottom:12px">
+          <div style="font-size:11.5px;color:var(--text-light);margin-bottom:3px">Current plan</div>
+          <div style="font-size:13px;font-weight:600;color:var(--brown-700)">Business Package</div>
+          <div style="font-size:11px;color:var(--text-light)">11/15 uploads used</div>
+        </div>
+        <div class="dash-nav-item active"><svg class="dash-nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 2h5v5H2V2zm7 0h5v5H9V2zm-7 7h5v5H2V9zm7 0h5v5H9V9z"/></svg>Dashboard</div>
+        <div class="dash-nav-item"><svg class="dash-nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3h8a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm1 2v6h6V5H5z"/></svg>Transactions</div>
+        <div class="dash-nav-item"><svg class="dash-nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M2 10L6 5l4 3 4-6v11H2V10z"/></svg>Analytics</div>
+        <div class="dash-nav-item"><svg class="dash-nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M4 2h8l2 3v9H2V5l2-3zm1 1L4 5h8L11 3H5zm-1 4v5h8V7H4z"/></svg>Reports</div>
+        <div class="dash-nav-item"><svg class="dash-nav-icon" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a4 4 0 1 0 0 8A4 4 0 0 0 8 1zM3 10a5 5 0 0 0-1 3h12a5 5 0 0 0-1-3H3z"/></svg>Account</div>
+      </div>
+      <div class="dash-main">
+        <div class="dash-greeting">
+          <h2>Good morning, Wanjiku 👋</h2>
+          <p>February 2024 · Mama W Salon & Cosmetics</p>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-card"><div class="label">Revenue</div><div class="value">89,200</div><div class="change up">↑ 12% vs Jan</div></div>
+          <div class="metric-card"><div class="label">Expenses</div><div class="value">54,700</div><div class="change down">↑ 8% vs Jan</div></div>
+          <div class="metric-card"><div class="label">Est. Profit</div><div class="value">34,500</div><div class="change up">↑ 18% vs Jan</div></div>
+          <div class="metric-card"><div class="label">Transactions</div><div class="value">147</div><div class="change up">+23 vs Jan</div></div>
+        </div>
+        <div class="chart-row">
+          <div class="chart-box">
+            <h4>Monthly Revenue vs Expenses</h4>
+            <div style="position:relative;height:160px"><canvas id="dashChart1"></canvas></div>
+          </div>
+          <div class="chart-box">
+            <h4>Expense Breakdown</h4>
+            <div style="position:relative;height:160px"><canvas id="dashChart2"></canvas></div>
+          </div>
+        </div>
+        <div class="insight-strip">
+          <div class="icon">💡</div>
+          <p><strong>AI Insight: Inventory costs are 38% of expenses</strong> Your inventory spending (KES 20,786) is the highest single cost category. Consider reviewing slow-moving stock and negotiating with suppliers for bulk discounts.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FEATURES -->
+<div class="bg-white" id="features">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Features</div>
+    <h2>Everything Your Business Needs</h2>
+    <p>Built specifically for Kenya's SME owners who run their businesses on M-Pesa and hustle.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>AI Financial Assistant</h3>
+      <p>Ask questions about your business in plain Swahili or English. Get cash flow warnings, unusual spending alerts, and growth opportunities automatically.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📱</div>
+      <h3>M-Pesa Statement Analysis</h3>
+      <p>Upload your M-Pesa CSV directly. We parse all transactions, separate personal from business, and give you a clean business ledger.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Smart Categorization</h3>
+      <p>Transactions are auto-tagged into income and expense categories. Manually correct any misclassification with one click.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3>Profit Estimation</h3>
+      <p>Get a clear estimated profit figure each month. No accounting degree needed — just upload and we handle the calculations.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📋</div>
+      <h3>Downloadable Reports</h3>
+      <p>Professional PDF and Excel reports for your records, loan applications, or sharing with a business partner or investor.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔒</div>
+      <h3>Secure & Private</h3>
+      <p>Your financial data is encrypted in transit and at rest. We never share or sell your data. Full compliance with Kenya's Data Protection Act 2019.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- TRANSACTION CATEGORIES -->
+<div class="bg-cream">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Smart Categorization</div>
+    <h2>Every Transaction, Perfectly Sorted</h2>
+    <p>Our AI categorizes your transactions automatically. You can correct any category with one click.</p>
+  </div>
+  <div class="cat-list" style="max-width:640px;margin:0 auto">
+    <div class="cat-group">
+      <h4>Income Categories</h4>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="cat-item"><div class="cat-dot" style="background:#2d7a4f"></div>Sales Revenue</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#3a8f62"></div>Customer Payments</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#52a87a"></div>POS / Till Revenue</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#6ec495"></div>Service Income</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#8fd4ab"></div>Deposits Received</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#aee2c4"></div>Other Income</div>
+      </div>
+    </div>
+    <div class="cat-group">
+      <h4>Expense Categories</h4>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div class="cat-item"><div class="cat-dot" style="background:#b83232"></div>Inventory & Stock</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#c94a4a"></div>Rent & Premises</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#d86464"></div>Staff Salaries</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#e47d7d"></div>Transport</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#eda0a0"></div>Utilities & Airtime</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#f2b8b8"></div>Marketing</div>
+        <div class="cat-item"><div class="cat-dot" style="background:#f5d0d0"></div>Miscellaneous</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- AI INSIGHTS -->
+<div class="bg-white">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Business Insights Engine</div>
+    <h2>AI-Powered Advice for Your Business</h2>
+    <p>Get plain-language insights and recommendations, not confusing accounting jargon.</p>
+  </div>
+  <div class="insights-grid">
+    <div class="insight-card warning">
+      <h4>Rent is 28% of Monthly Expenses</h4>
+      <p>Your rent payment (KES 18,000) represents a significant share of total spending and limits your profitability.</p>
+      <div class="rec"><strong>Recommendation</strong>Consider negotiating a fixed-term lease extension in exchange for a reduced rate, or explore shared business spaces in your area.</div>
+    </div>
+    <div class="insight-card good">
+      <h4>Revenue Up 15% from Last Month</h4>
+      <p>Your sales in February (KES 89,200) grew compared to January (KES 77,600). Strong performance, keep it up!</p>
+      <div class="rec"><strong>Recommendation</strong>Identify which products or services drove the increase and promote them more actively in March.</div>
+    </div>
+    <div class="insight-card alert">
+      <h4>Inventory Costs Exceed Weekly Sales</h4>
+      <p>You spent KES 20,786 on inventory but only earned KES 15,200 in the same period. This signals potential overstock.</p>
+      <div class="rec"><strong>Recommendation</strong>Review slow-moving products and pause reordering until current stock is sold. Prioritize high-margin items.</div>
+    </div>
+    <div class="insight-card good">
+      <h4>Weekends Drive 42% of Revenue</h4>
+      <p>Saturday and Sunday consistently generate the highest sales. Your weekend foot traffic is your strongest asset.</p>
+      <div class="rec"><strong>Recommendation</strong>Consider extra staff, special promotions, or new product launches on weekends to maximize this pattern.</div>
+    </div>
+    <div class="insight-card warning">
+      <h4>Cash Flow Tight Mid-Month</h4>
+      <p>Your balance dips below KES 5,000 between the 12th–18th of each month, creating a recurring gap period.</p>
+      <div class="rec"><strong>Recommendation</strong>Time your supplier payments for after the 20th when customer payments typically arrive, to avoid a cash squeeze.</div>
+    </div>
+    <div class="insight-card">
+      <h4>3 Repeat Customers = 22% of Revenue</h4>
+      <p>A small group of loyal clients represents a large portion of your income. Protecting these relationships is critical.</p>
+      <div class="rec"><strong>Recommendation</strong>Create a simple loyalty reward (e.g. a free service after 5 visits) to keep your top customers coming back.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- REPORTS -->
+<div class="bg-cream">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Report Generation</div>
+    <h2>Professional Reports, Instantly</h2>
+    <p>Download your financial reports in PDF or Excel format — ready for banks, investors, or your own records.</p>
+  </div>
+  <div class="report-list">
+    <div class="report-item">
+      <div class="report-item-icon">🏢</div>
+      <div class="report-item-info">
+        <h4>Business Financial Summary</h4>
+        <p>Complete overview: revenue, expenses, profit, and trends for your period</p>
+      </div>
+      <div class="report-item-btns">
+        <button class="dl-btn" onclick="showReportMsg()">📄 PDF</button>
+        <button class="dl-btn" onclick="showReportMsg()">📗 Excel</button>
+      </div>
+    </div>
+    <div class="report-item">
+      <div class="report-item-icon">📈</div>
+      <div class="report-item-info">
+        <h4>Monthly Revenue Report</h4>
+        <p>Daily and weekly revenue breakdown with trend charts and growth metrics</p>
+      </div>
+      <div class="report-item-btns">
+        <button class="dl-btn" onclick="showReportMsg()">📄 PDF</button>
+        <button class="dl-btn" onclick="showReportMsg()">📗 Excel</button>
+      </div>
+    </div>
+    <div class="report-item">
+      <div class="report-item-icon">💸</div>
+      <div class="report-item-info">
+        <h4>Expense Analysis Report</h4>
+        <p>Categorized spending breakdown, top expenses, and cost reduction opportunities</p>
+      </div>
+      <div class="report-item-btns">
+        <button class="dl-btn" onclick="showReportMsg()">📄 PDF</button>
+        <button class="dl-btn" onclick="showReportMsg()">📗 Excel</button>
+      </div>
+    </div>
+    <div class="report-item">
+      <div class="report-item-icon">💰</div>
+      <div class="report-item-info">
+        <h4>Cash Flow Statement</h4>
+        <p>Day-by-day money movement with opening/closing balances and cash position</p>
+      </div>
+      <div class="report-item-btns">
+        <button class="dl-btn" onclick="showReportMsg()">📄 PDF</button>
+        <button class="dl-btn" onclick="showReportMsg()">📗 Excel</button>
+      </div>
+    </div>
+    <div class="report-item">
+      <div class="report-item-icon">🎯</div>
+      <div class="report-item-info">
+        <h4>Profit Estimation Report</h4>
+        <p>Estimated gross and net profit with AI-powered profitability recommendations</p>
+      </div>
+      <div class="report-item-btns">
+        <button class="dl-btn" onclick="showReportMsg()">📄 PDF</button>
+        <button class="dl-btn" onclick="showReportMsg()">📗 Excel</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- PRICING -->
+<div class="bg-white" id="pricing">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Pricing</div>
+    <h2>Affordable for Every SME</h2>
+    <p>Start free. Pay only for what you use. No hidden fees, no monthly commitment required.</p>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="price-tier">Free Tier</div>
+      <div class="price-amount"><div class="free">Free</div></div>
+      <div class="price-desc">Try MobileLedgerKE at no cost. No card needed.</div>
+      <ul class="price-features">
+        <li>1 document upload</li>
+        <li>1 report download</li>
+        <li class="limited">Basic insights only</li>
+        <li class="limited">No AI analysis</li>
+      </ul>
+      <button class="btn btn-ghost" style="width:100%" onclick="openModal()">Get Started Free</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Pay-Per-Report</div>
+      <div class="price-amount"><span class="kes">KES</span><span class="num">99</span></div>
+      <div class="price-desc">Just need one report? Pay once, no subscription.</div>
+      <ul class="price-features">
+        <li>1 document analysis</li>
+        <li>1 report download (PDF)</li>
+        <li>Transaction categorization</li>
+        <li class="limited">Basic insights</li>
+      </ul>
+      <button class="btn btn-ghost" style="width:100%" onclick="openModal()">Buy Single Report</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Starter</div>
+      <div class="price-amount"><span class="kes">KES</span><span class="num">499</span></div>
+      <div class="price-desc">For growing businesses that need regular analysis.</div>
+      <ul class="price-features">
+        <li>5 document uploads</li>
+        <li>5 report downloads</li>
+        <li>Advanced insights</li>
+        <li>Full dashboard access</li>
+      </ul>
+      <button class="btn btn-ghost" style="width:100%" onclick="openModal()">Get Starter</button>
+    </div>
+    <div class="price-card featured">
+      <div class="popular-badge">Most Popular</div>
+      <div class="price-tier">Business</div>
+      <div class="price-amount"><span class="kes">KES</span><span class="num">999</span></div>
+      <div class="price-desc">Best for active businesses with regular transactions.</div>
+      <ul class="price-features">
+        <li>15 document uploads</li>
+        <li>15 report downloads</li>
+        <li>AI financial insights</li>
+        <li>Full dashboard</li>
+        <li>Expense categorization</li>
+      </ul>
+      <button class="btn btn-brown" style="width:100%" onclick="openModal()">Get Business</button>
+    </div>
+    <div class="price-card">
+      <div class="price-tier">Premium</div>
+      <div class="price-amount"><span class="kes">KES</span><span class="num">2,500</span></div>
+      <div class="price-desc">For power users who upload and analyze frequently.</div>
+      <ul class="price-features">
+        <li>Unlimited uploads</li>
+        <li>Unlimited reports</li>
+        <li>Advanced AI analysis</li>
+        <li>Business recommendations</li>
+        <li>Priority processing</li>
+        <li>Monthly summary reports</li>
+      </ul>
+      <button class="btn btn-ghost" style="width:100%" onclick="openModal()">Get Premium</button>
+    </div>
+  </div>
+  <p style="text-align:center;font-size:13px;color:var(--text-light);margin-top:20px">All prices are one-time (not subscription). Pay via M-Pesa, card, or bank transfer.</p>
+</div>
+</div>
+
+<!-- SYSTEM ARCHITECTURE -->
+<div class="bg-cream">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Technical Architecture</div>
+    <h2>Built to Scale with Kenya's SMEs</h2>
+    <p>Enterprise-grade infrastructure at SME-friendly prices.</p>
+  </div>
+  <div class="arch-grid">
+    <div class="arch-layer">
+      <h4>Frontend</h4>
+      <span class="arch-tag">React / Next.js</span>
+      <span class="arch-tag">Tailwind CSS</span>
+      <span class="arch-tag">Chart.js</span>
+      <span class="arch-tag">PWA</span>
+    </div>
+    <div class="arch-layer">
+      <h4>Backend API</h4>
+      <span class="arch-tag">Python FastAPI</span>
+      <span class="arch-tag">JWT Auth</span>
+      <span class="arch-tag">Celery Workers</span>
+      <span class="arch-tag">Redis Queue</span>
+    </div>
+    <div class="arch-layer">
+      <h4>Data Processing</h4>
+      <span class="arch-tag">Pandas</span>
+      <span class="arch-tag">DuckDB</span>
+      <span class="arch-tag">OpenPyXL</span>
+      <span class="arch-tag">CSV Parser</span>
+    </div>
+    <div class="arch-layer">
+      <h4>AI / Insights</h4>
+      <span class="arch-tag">Claude API</span>
+      <span class="arch-tag">Pattern Engine</span>
+      <span class="arch-tag">Anomaly Detect</span>
+      <span class="arch-tag">NLP Summaries</span>
+    </div>
+    <div class="arch-layer">
+      <h4>Storage & DB</h4>
+      <span class="arch-tag">PostgreSQL</span>
+      <span class="arch-tag">S3 / Files</span>
+      <span class="arch-tag">AES Encryption</span>
+      <span class="arch-tag">Backups</span>
+    </div>
+    <div class="arch-layer">
+      <h4>Deployment</h4>
+      <span class="arch-tag">Docker</span>
+      <span class="arch-tag">Railway / AWS</span>
+      <span class="arch-tag">CDN</span>
+      <span class="arch-tag">Auto-scaling</span>
+    </div>
+  </div>
+  <div style="margin-top:28px;background:var(--white);border:1px solid var(--border);border-radius:var(--radius);padding:20px">
+    <h4 style="font-size:14px;font-weight:600;margin-bottom:12px;font-family:var(--ff-body)">Core Database Tables</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:8px">
+      <span class="arch-tag">businesses</span>
+      <span class="arch-tag">users</span>
+      <span class="arch-tag">transactions</span>
+      <span class="arch-tag">imports</span>
+      <span class="arch-tag">categories</span>
+      <span class="arch-tag">reports</span>
+      <span class="arch-tag">insights</span>
+      <span class="arch-tag">subscriptions</span>
+      <span class="arch-tag">audit_logs</span>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- DATA PROTECTION -->
+<div class="bg-white">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">Data Protection</div>
+    <h2>Your Data is Safe with Us</h2>
+    <p>We comply fully with Kenya's Data Protection Act 2019 and international security standards.</p>
+  </div>
+  <div class="dp-grid">
+    <div class="dp-card">
+      <div class="dp-icon">🔐</div>
+      <h4>End-to-End Encryption</h4>
+      <p>All files and financial data are encrypted using AES-256 in transit and at rest. Only you can access your business data.</p>
+    </div>
+    <div class="dp-card">
+      <div class="dp-icon">🏛️</div>
+      <h4>Kenya Data Protection Act 2019</h4>
+      <p>We are fully compliant with the Kenya Data Protection Act 2019. We collect only what we need and never sell your data.</p>
+    </div>
+    <div class="dp-card">
+      <div class="dp-icon">🗑️</div>
+      <h4>Right to Deletion</h4>
+      <p>Request deletion of all your data at any time. We will permanently remove your files and records within 48 hours.</p>
+    </div>
+    <div class="dp-card">
+      <div class="dp-icon">📋</div>
+      <h4>Audit Logging</h4>
+      <p>Every access and action on your account is logged. You can view who accessed your data and when from your account page.</p>
+    </div>
+    <div class="dp-card">
+      <div class="dp-icon">🌍</div>
+      <h4>Data Stored in Kenya</h4>
+      <p>Your financial data is stored on servers in Kenya/East Africa. We do not transfer personal data outside the region without consent.</p>
+    </div>
+    <div class="dp-card">
+      <div class="dp-icon">👁️</div>
+      <h4>Zero Data Selling</h4>
+      <p>We do not show ads, we do not sell your data, and we do not share your financial information with any third parties.</p>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FAQ -->
+<div class="bg-cream" id="faq">
+<div class="section">
+  <div class="section-header">
+    <div class="overline">FAQ</div>
+    <h2>Frequently Asked Questions</h2>
+    <p>Everything you need to know about MobileLedgerKE.</p>
+  </div>
+  <div class="faq-list">
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Do I need to understand accounting to use MobileLedgerKE? <span class="arrow">⌄</span></div>
+      <div class="faq-a">No. MobileLedgerKE is built for business owners who are not accountants. Just upload your M-Pesa statement or sales file, and we turn it into plain-language summaries and charts. No jargon, no complicated forms.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What file formats can I upload? <span class="arrow">⌄</span></div>
+      <div class="faq-a">We support CSV files, Excel workbooks (.xlsx), M-Pesa statements (the CSV you download from MySafaricom app), POS system exports, and bank statement downloads. If you are unsure about your format, contact us on WhatsApp and we will help you.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I get my M-Pesa statement? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Open the MySafaricom app, go to M-Pesa, select Statement, choose your date range (up to 3 months), and request the statement. It will be emailed to you as a CSV or PDF. Download it and upload it directly to MobileLedgerKE.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Is my financial data safe? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Yes. We take data security very seriously. Your files are encrypted using AES-256 encryption both when uploaded and when stored. We comply with Kenya's Data Protection Act 2019 and do not sell or share your data with anyone. You can delete your data at any time.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How do I pay? Do you accept M-Pesa? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Yes, we accept M-Pesa payments (Paybill or Till number), debit/credit cards, and bank transfers. Payments are one-time — you pay for a package and use it until your upload/report credits run out. There is no automatic monthly billing.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can the AI make mistakes in categorizing transactions? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Yes, occasionally the AI might miscategorize an unusual transaction. That's why we allow you to manually correct any category with a single click. The more you use the platform, the better it learns your specific business patterns.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I use this for my salon, shop, or market stall? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Absolutely. MobileLedgerKE is designed for salons, cosmetics shops, wig businesses, candle businesses, restaurants, kiosks, market traders, retail dukas, and any other small or medium business. If you receive money and spend money, we can help you understand your finances.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">What is the difference between the packages? <span class="arrow">⌄</span></div>
+      <div class="faq-a">The main differences are how many document uploads and report downloads you can do, and whether you get AI-powered insights. The free tier lets you try the platform once. Pay-Per-Report is for occasional use. Starter and Business are for regular use, and Premium is for businesses that analyze finances frequently.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">How long does it take to analyze a file? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Most files are processed within 1–3 minutes. Large M-Pesa statements with thousands of transactions may take up to 5 minutes. You will receive a notification when your analysis is ready, and you can close the browser and come back.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q">Can I share reports with my bank or SACCO? <span class="arrow">⌄</span></div>
+      <div class="faq-a">Yes. Our PDF reports are formatted professionally and can be shared with banks, SACCOs, investors, or grant applications. They include your business name, period, revenue, expenses, and profit estimates in a clean, readable format.</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- CONTACT / WHATSAPP -->
+<div class="contact-bar">
+  <div style="max-width:600px;margin:0 auto">
+    <h2 style="font-size:28px;font-family:var(--ff-head);color:#fff;margin-bottom:10px">Need Help? Reach Us on WhatsApp</h2>
+    <p style="color:rgba(255,255,255,0.7);margin-bottom:24px;font-size:15px">Our team is available Monday–Saturday, 8am–8pm EAT. We speak English and Swahili.</p>
+    <a href="https://wa.me/254700000000?text=Hello%20MobileLedgerKE%2C%20I%20need%20help%20with..." class="wa-btn" target="_blank">
+      <svg class="wa-icon" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Chat on WhatsApp
+    </a>
+    <p style="color:rgba(255,255,255,0.5);margin-top:14px;font-size:12.5px">Or email us at support@mobileledgerke.co.ke</p>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="logo" style="font-size:18px;color:#fff">
+          <div class="logo-mark" style="background:rgba(255,255,255,0.15);color:#fff;font-size:14px">ML</div>
+          MobileLedger<span style="color:var(--gold-light)">KE</span>
+        </div>
+        <p style="margin-top:10px;color:rgba(255,255,255,0.5)">Smart financial analysis for Kenya's small and medium businesses. No accounting knowledge required.</p>
+      </div>
+      <div class="footer-col">
+        <h5>Platform</h5>
+        <a href="#features">Features</a>
+        <a href="#pricing">Pricing</a>
+        <a href="#demo">Dashboard Demo</a>
+        <a href="#upload">Upload Files</a>
+      </div>
+      <div class="footer-col">
+        <h5>Support</h5>
+        <a href="#faq">FAQ</a>
+        <a href="https://wa.me/254700000000" target="_blank">WhatsApp Support</a>
+        <a href="mailto:support@mobileledgerke.co.ke">Email Support</a>
+        <a href="#">User Guide (PDF)</a>
+      </div>
+      <div class="footer-col">
+        <h5>Legal</h5>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Data Protection</a>
+        <a href="#">Cookie Policy</a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2024 MobileLedgerKE. All rights reserved. Nairobi, Kenya.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <span class="compliance-badge">Kenya Data Protection Act 2019</span>
+        <span class="compliance-badge">AES-256 Encrypted</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// CHARTS
+window.addEventListener('load', function() {
+  // Revenue vs Expenses Bar Chart
+  const ctx1 = document.getElementById('dashChart1');
+  if (ctx1) {
+    new Chart(ctx1, {
+      type: 'bar',
+      data: {
+        labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+        datasets: [
+          { label: 'Revenue', data: [72400, 68900, 91200, 77600, 89200], backgroundColor: '#7d5432', borderRadius: 4 },
+          { label: 'Expenses', data: [48200, 51100, 62400, 50600, 54700], backgroundColor: '#d4b896', borderRadius: 4 }
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: {
+          x: { ticks: { font: { size: 11 }, color: '#9a7d5a' }, grid: { display: false }, border: { display: false } },
+          y: { ticks: { font: { size: 10 }, color: '#9a7d5a', callback: v => 'K'+Math.round(v/1000) }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } }
+        }
+      }
+    });
+  }
+
+  // Expense Doughnut
+  const ctx2 = document.getElementById('dashChart2');
+  if (ctx2) {
+    new Chart(ctx2, {
+      type: 'doughnut',
+      data: {
+        labels: ['Inventory', 'Rent', 'Salaries', 'Utilities', 'Marketing', 'Other'],
+        datasets: [{ data: [38, 28, 19, 7, 5, 3], backgroundColor: ['#7d5432','#9a6e47','#b8926a','#d4b896','#e8d5c0','#f5ebe0'], borderWidth: 0 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '65%',
+        plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, color: '#9a7d5a', boxWidth: 10, padding: 6 } } }
+      }
+    });
+  }
+});
+
+// MODAL
+function openModal() {
+  document.getElementById('signupModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+  document.getElementById('signupModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function handleSignup() {
+  alert('Account created successfully! Check your WhatsApp for your login link. Welcome to MobileLedgerKE!');
+  closeModal();
+}
+document.getElementById('signupModal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// FAQ
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+
+// UPLOAD DEMO
+function triggerUpload() {}
+function handleFileUpload(input) {
+  if (input.files.length > 0) {
+    const name = input.files[0].name;
+    alert('Demo mode: File "' + name + '" selected. In the full app, this would begin processing immediately.');
+  }
+}
+
+// REPORT MSG
+function showReportMsg() {
+  alert('Report download requires an active plan. Start with a free account and upgrade to download reports!');
+}
+
+// MOBILE MENU
+function toggleMobileMenu() {
+  const links = document.querySelector('.nav-links');
+  if (links.style.display === 'flex') {
+    links.style.display = 'none';
+  } else {
+    links.style.display = 'flex';
+    links.style.flexDirection = 'column';
+    links.style.position = 'absolute';
+    links.style.top = '62px';
+    links.style.left = '0';
+    links.style.right = '0';
+    links.style.background = 'white';
+    links.style.padding = '12px 24px';
+    links.style.borderBottom = '1px solid var(--border)';
+    links.style.zIndex = '99';
+  }
+}
+
+// SMOOTH SCROLL
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', function(e) {
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  });
+});
+</script>
+</body>
+</html>
