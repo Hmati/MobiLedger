@@ -6,6 +6,7 @@
 <title>MobileLedgerKE — Smart Finance for Kenya's SMEs</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
   --brown-50:#fdf8f3;
@@ -1172,13 +1173,264 @@ function toggleFaq(el) {
 }
 
 // UPLOAD DEMO
-function triggerUpload() {}
+function triggerUpload() {
+  document.getElementById('fileInput').click();
+}
+
 function handleFileUpload(input) {
   if (input.files.length > 0) {
-    const name = input.files[0].name;
-    alert('Demo mode: File "' + name + '" selected. In the full app, this would begin processing immediately.');
+    const file = input.files[0];
+    const fileName = file.name;
+    const fileExt = fileName.split('.').pop().toLowerCase();
+    
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      let data;
+      if (fileExt === 'csv') {
+        data = parseCSV(e.target.result);
+      } else if (fileExt === 'xlsx' || fileExt === 'xls') {
+        data = parseExcel(e.target.result);
+      } else {
+        alert('Unsupported file format. Please upload CSV or Excel files.');
+        return;
+      }
+      
+      // Store data
+      const transactions = processTransactions(data);
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+      
+      // Update dashboard
+      updateDashboard(transactions);
+      
+      alert('File "' + fileName + '" processed successfully! Dashboard updated with your data.');
+    };
+    reader.readAsArrayBuffer(file);
   }
 }
+
+function parseCSV(csvText) {
+  const lines = csvText.split('\n');
+  const headers = lines[0].split(',').map(h => h.trim());
+  const rows = lines.slice(1).map(line => line.split(',').map(cell => cell.trim()));
+  return { headers, rows };
+}
+
+function parseExcel(buffer) {
+  const workbook = XLSX.read(buffer, { type: 'array' });
+  const sheetName = workbook.SheetNames[0];
+  const worksheet = workbook.Sheets[sheetName];
+  const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+  const headers = jsonData[0];
+  const rows = jsonData.slice(1);
+  return { headers, rows };
+}
+
+function processTransactions(data) {
+  const { headers, rows } = data;
+  const transactions = [];
+  
+  // Simple mapping - assume common columns
+  const dateCol = findColumn(headers, ['date', 'Date', 'DATE']);
+  const descCol = findColumn(headers, ['description', 'desc', 'Description', 'Details']);
+  const amountCol = findColumn(headers, ['amount', 'Amount', 'AMOUNT']);
+  const typeCol = findColumn(headers, ['type', 'Type', 'debit', 'credit']);
+  
+  rows.forEach(row => {
+    if (row.length > 0) {
+      const transaction = {
+        date: dateCol !== -1 ? row[dateCol] : '',
+        description: descCol !== -1 ? row[descCol] : '',
+        amount: amountCol !== -1 ? parseFloat(row[amountCol]) || 0 : 0,
+        type: typeCol !== -1 ? row[typeCol] : 'expense'
+      };
+      transactions.push(transaction);
+    }
+  });
+  
+  return transactions;
+}
+
+function findColumn(headers, possibleNames) {
+  for (let i = 0; i < headers.length; i++) {
+    const header = headers[i].toLowerCase();
+    if (possibleNames.some(name => header.includes(name.toLowerCase()))) {
+      return i;
+    }
+  }
+  return -1;
+}
+
+function updateDashboard(transactions) {
+  // Calculate metrics
+  const totalRevenue = transactions.filter(t => t.amount > 0).reduce((sum, t) => sum + t.amount, 0);
+  const totalExpenses = Math.abs(transactions.filter(t => t.amount < 0).reduce((sum, t) => sum + t.amount, 0));
+  const profit = totalRevenue - totalExpenses;
+  const transactionCount = transactions.length;
+  
+  // Update metrics
+  document.querySelector('.metric-card:nth-child(1) .value').textContent = totalRevenue.toLocaleString();
+  document.querySelector('.metric-card:nth-child(2) .value').textContent = totalExpenses.toLocaleString();
+  document.querySelector('.metric-card:nth-child(3) .value').textContent = profit.toLocaleString();
+  document.querySelector('.metric-card:nth-child(4) .value').textContent = transactionCount;
+  
+  // Update charts
+  updateCharts(transactions);
+  
+  // Update table
+  updateTransactionTable(transactions);
+}
+
+function updateCharts(transactions) {
+  // Group by month (simple)
+  const monthlyData = {};
+  transactions.forEach(t => {
+    const date = new Date(t.date);
+    const month = date.toLocaleString('default', { month: 'short' });
+    if (!monthlyData[month]) monthlyData[month] = { revenue: 0, expenses: 0 };
+    if (t.amount > 0) monthlyData[month].revenue += t.amount;
+    else monthlyData[month].expenses += Math.abs(t.amount);
+  });
+  
+  const labels = Object.keys(monthlyData);
+  const revenueData = labels.map(m => monthlyData[m].revenue);
+  const expenseData = labels.map(m => monthlyData[m].expenses);
+  
+  // Update bar chart
+  const ctx1 = document.getElementById('dashChart1');
+  if (window.chart1) window.chart1.destroy();
+  window.chart1 = new Chart(ctx1, {
+    type: 'bar',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'Revenue', data: revenueData, backgroundColor: '#7d5432', borderRadius: 4 },
+        { label: 'Expenses', data: expenseData, backgroundColor: '#d4b896', borderRadius: 4 }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { font: { size: 11 }, color: '#9a7d5a' }, grid: { display: false }, border: { display: false } },
+        y: { ticks: { font: { size: 10 }, color: '#9a7d5a', callback: v => 'K'+Math.round(v/1000) }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } }
+      }
+    }
+  });
+  
+  // Expense categories (simple categorization)
+  const categories = {};
+  transactions.filter(t => t.amount < 0).forEach(t => {
+    const desc = t.description.toLowerCase();
+    let cat = 'Other';
+    if (desc.includes('rent')) cat = 'Rent';
+    else if (desc.includes('salary') || desc.includes('staff')) cat = 'Salaries';
+    else if (desc.includes('inventory') || desc.includes('stock')) cat = 'Inventory';
+    else if (desc.includes('utility') || desc.includes('airtime')) cat = 'Utilities';
+    else if (desc.includes('marketing')) cat = 'Marketing';
+    
+    categories[cat] = (categories[cat] || 0) + Math.abs(t.amount);
+  });
+  
+  const catLabels = Object.keys(categories);
+  const catData = catLabels.map(c => categories[c]);
+  const totalExpenses = catData.reduce((a,b) => a+b, 0);
+  const percentages = catData.map(v => Math.round((v / totalExpenses) * 100));
+  
+  // Update doughnut chart
+  const ctx2 = document.getElementById('dashChart2');
+  if (window.chart2) window.chart2.destroy();
+  window.chart2 = new Chart(ctx2, {
+    type: 'doughnut',
+    data: {
+      labels: catLabels,
+      datasets: [{ data: percentages, backgroundColor: ['#7d5432','#9a6e47','#b8926a','#d4b896','#e8d5c0','#f5ebe0'], borderWidth: 0 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, color: '#9a7d5a', boxWidth: 10, padding: 6 } } }
+    }
+  });
+}
+
+function updateTransactionTable(transactions) {
+  const tbody = document.querySelector('.table-wrap table tbody');
+  tbody.innerHTML = '';
+  
+  transactions.slice(0, 10).forEach((t, index) => {
+    const row = document.createElement('tr');
+    const amount = t.amount;
+    const amountClass = amount > 0 ? 'amount-pos' : 'amount-neg';
+    const amountText = (amount > 0 ? '+' : '') + Math.abs(amount).toLocaleString() + '.00';
+    const type = amount > 0 ? 'Income' : 'Expense';
+    const badgeClass = amount > 0 ? 'badge-income' : 'badge-expense';
+    
+    // Simple category
+    let category = 'Other';
+    const desc = t.description.toLowerCase();
+    if (desc.includes('rent')) category = 'Rent';
+    else if (desc.includes('salary') || desc.includes('staff')) category = 'Staff Salaries';
+    else if (desc.includes('purchase') || desc.includes('inventory')) category = 'Inventory Purchase';
+    else if (desc.includes('utility') || desc.includes('electricity') || desc.includes('airtime')) category = 'Utilities';
+    else if (desc.includes('customer') || desc.includes('payment')) category = 'Sales Revenue';
+    
+    row.innerHTML = `
+      <td>${t.date}</td>
+      <td>${t.description}</td>
+      <td>REF${String(index + 1).padStart(3, '0')}</td>
+      <td class="${amountClass}">${amountText}</td>
+      <td>${category}</td>
+      <td><span class="badge ${badgeClass}">${type}</span></td>
+    `;
+    tbody.appendChild(row);
+  });
+}
+
+// Load data on page load
+window.addEventListener('load', function() {
+  const stored = localStorage.getItem('transactions');
+  if (stored) {
+    const transactions = JSON.parse(stored);
+    updateDashboard(transactions);
+  } else {
+    // Default charts
+    const ctx1 = document.getElementById('dashChart1');
+    if (ctx1) {
+      window.chart1 = new Chart(ctx1, {
+        type: 'bar',
+        data: {
+          labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb'],
+          datasets: [
+            { label: 'Revenue', data: [72400, 68900, 91200, 77600, 89200], backgroundColor: '#7d5432', borderRadius: 4 },
+            { label: 'Expenses', data: [48200, 51100, 62400, 50600, 54700], backgroundColor: '#d4b896', borderRadius: 4 }
+          ]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: {
+            x: { ticks: { font: { size: 11 }, color: '#9a7d5a' }, grid: { display: false }, border: { display: false } },
+            y: { ticks: { font: { size: 10 }, color: '#9a7d5a', callback: v => 'K'+Math.round(v/1000) }, grid: { color: 'rgba(0,0,0,0.04)' }, border: { display: false } }
+          }
+        }
+      });
+    }
+
+    const ctx2 = document.getElementById('dashChart2');
+    if (ctx2) {
+      window.chart2 = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+          labels: ['Inventory', 'Rent', 'Salaries', 'Utilities', 'Marketing', 'Other'],
+          datasets: [{ data: [38, 28, 19, 7, 5, 3], backgroundColor: ['#7d5432','#9a6e47','#b8926a','#d4b896','#e8d5c0','#f5ebe0'], borderWidth: 0 }]
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false, cutout: '65%',
+          plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, color: '#9a7d5a', boxWidth: 10, padding: 6 } } }
+        }
+      });
+    }
+  }
+});
 
 // REPORT MSG
 function showReportMsg() {
